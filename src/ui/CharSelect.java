@@ -31,8 +31,8 @@ public class CharSelect {
         new Character("NO_IMG_YET","Clubber", 2.0, 150, 10, 2.0, 2.0, false)
     };
 
-    public String p1;
-    public String p2;
+    public Character p1;
+    public Character p2;
     
     public CharSelect(GamePanel gp, GameStateManager state, KeyHandler keyH) {
         this.gp = gp;
@@ -53,7 +53,7 @@ public class CharSelect {
             keyH.sPressed = false;
         }
         if(keyH.spacePressed){
-            p1 = chars[commandNum1].name;
+            p1 = chars[commandNum1];
         }
 
         //P2 - uses arrow keys/enter
@@ -68,7 +68,7 @@ public class CharSelect {
             keyH.downPressed = false;
         }
         if(keyH.enterPressed){
-            p2 = chars[commandNum2].name;
+            p2 = chars[commandNum2];
         }
     }
 
