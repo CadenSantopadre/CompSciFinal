@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Font;
 import util.KeyHandler;
 import util.GameStateManager;
+import entity.Character;
 
 
 public class CharSelect {
@@ -13,7 +14,23 @@ public class CharSelect {
     KeyHandler keyH;
     public int commandNum1 = 0;
     public int commandNum2 = 0;
-    public String[] chars = {"Char1", "Char2"};
+    
+    //character roster
+    /*
+    public String imgPath;
+    public String name;
+    public double speed;
+    public int HP;
+    public int fireRate;
+    public double jump;
+    public double weight;
+    */
+    public static final Character[] chars = {
+      //new Character(        "ImgPath"    ,      "Name"   ,       Speed,   HP,        fireRate,  Jump,      Weight,      unlocked),
+        new Character("NO_IMG_YET", "Shooter", 3.0, 100, 5, 2.0, 2.0, true),
+        new Character("NO_IMG_YET","Clubber", 2.0, 150, 10, 2.0, 2.0, false)
+    };
+
     public String p1;
     public String p2;
     
@@ -36,7 +53,7 @@ public class CharSelect {
             keyH.sPressed = false;
         }
         if(keyH.spacePressed){
-            p1 = chars[commandNum1];
+            p1 = chars[commandNum1].name;
         }
 
         //P2 - uses arrow keys/enter
@@ -51,7 +68,7 @@ public class CharSelect {
             keyH.downPressed = false;
         }
         if(keyH.enterPressed){
-            p2 = chars[commandNum2];
+            p2 = chars[commandNum2].name;
         }
     }
 
@@ -72,8 +89,15 @@ public class CharSelect {
         for (int i = 0; i < chars.length; i++) {
             x = 50;
             y = 100 + i * 50;
+            //Give Dark Grey if they aren't unlocked
+            if(chars[i].unlocked){
+                g2.setColor(Color.WHITE);
+            }
+            else {
+                g2.setColor(Color.DARK_GRAY);
+            }
 
-            g2.drawString(chars[i], x, y);
+            g2.drawString(chars[i].name, x, y);
 
             if (commandNum1 == i) {
                 g2.drawString(">", x - 40, y);
@@ -84,8 +108,15 @@ public class CharSelect {
         for (int i = 0; i < chars.length; i++) {
             x = 1100;
             y = 100 + i * 50;
+            //Give Dark Grey if they aren't unlocked
+            if(chars[i].unlocked){
+                g2.setColor(Color.WHITE);
+            }
+            else {
+                g2.setColor(Color.DARK_GRAY);
+            }
 
-            g2.drawString(chars[i], x, y);
+            g2.drawString(chars[i].name, x, y);
 
             if (commandNum2 == i) {
                 g2.drawString(">", x - 40, y);
