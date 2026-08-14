@@ -9,8 +9,9 @@ import java.awt.Graphics; //G and G2D are real helpful here
 import java.awt.GradientPaint; //Lets me do a cool background
 import java.awt.BasicStroke; //Used for making lines and stuff
 
-import util.KeyHandler;
-import util.GameStateManager;
+import util.*;
+import entity.*;
+import battle.Battle;
 
 public class GamePanel extends JPanel implements Runnable {
     private Thread gameThread;
@@ -19,6 +20,9 @@ public class GamePanel extends JPanel implements Runnable {
     private KeyHandler keyH = new KeyHandler();
     private TitleScreen titleScreen;
     private CharSelect charSelect;
+    private Battle battle;
+    private Player1 p1;
+    private Player2 p2;
 
     public int screenWidth = 1280;
     public int screenHeight = 720;
@@ -36,6 +40,8 @@ public class GamePanel extends JPanel implements Runnable {
         titleScreen = new TitleScreen(this, stateManager, keyH);
 
         charSelect = new CharSelect(this, stateManager, keyH);
+
+        battle = new Battle(p1, p2);
     }
 
     public void startGameThread() {
@@ -86,11 +92,11 @@ public class GamePanel extends JPanel implements Runnable {
             case 1:
             charSelect.update();
             break;
-            /*
+
             case 2:
             battle.update();
             break;
-
+            /*
             case 3:
             settings.update();
             break;*/
@@ -112,11 +118,11 @@ public class GamePanel extends JPanel implements Runnable {
             charSelect.draw(g2);
             break;
             
-            /*
+            
             case 2:
             battle.draw(g2);
             break;
-
+            /*
             case 3:
             settings.draw(g2);
             break;*/
@@ -124,7 +130,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     //And here's where I'll put any extra "global" stuff
-     public void drawGradientBox(Graphics2D g2, int x, int y, int w, int h) {
+    public void drawGradientBox(Graphics2D g2, int x, int y, int w, int h) {
         //left
         GradientPaint left = new GradientPaint(x, y, Color.BLACK, x, y + h, Color.BLUE);
 
@@ -145,6 +151,26 @@ public class GamePanel extends JPanel implements Runnable {
         g2.drawRect(x, y, w, h);
     }
 
+    public void drawGradientBox(Graphics2D g2, int x, int y, int w, int h, Color top, Color bottom) {
+        //left
+        GradientPaint left = new GradientPaint(x, y, top, x, y + h, bottom);
+
+        //right
+        GradientPaint right = new GradientPaint(x + w, y, top, x + w, y + h, bottom);
+
+        //actually drawing left half
+        g2.setPaint(left);
+        g2.fillRect(x, y, w / 2, h);
+
+        //actually drawing right half
+        g2.setPaint(right);
+        g2.fillRect(x + w / 2, y, w / 2, h);
+
+        //border
+        g2.setColor(Color.WHITE);
+        g2.setStroke(new BasicStroke(5)); 
+        g2.drawRect(x, y, w, h);
+    }
     
     public int centeredText(String string){
         int px = 0;

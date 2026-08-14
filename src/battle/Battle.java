@@ -5,6 +5,10 @@ import entity.*;
 import ui.GamePanel;
 import util.GameStateManager;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Font;
+
 public class Battle {
     private Player1 player1;
     private Player2 player2;
@@ -135,4 +139,28 @@ public class Battle {
     }
 
     //Next we add the draw methods
+    public void draw(Graphics2D g2){
+        //Make a sky/black bottom
+        gp.drawGradientBox(g2, 0, 0, gp.screenWidth, gp.screenHeight, Color.CYAN, Color.BLACK);
+
+        //Then make player 1
+        g2.setColor(Color.RED);
+        g2.fillRect((int)player1.x, (int)player1.y, 32, 48);
+        //p2
+        g2.setColor(Color.BLUE);
+        g2.fillRect((int)player2.x, (int)player2.y, 32, 48);
+
+        g2.setColor(Color.YELLOW);
+        //No reverse for loop here for some reason??????
+        for (int i = 0; i < activeProjectiles.size(); i++) {
+            Projectile p = activeProjectiles.get(i);
+            g2.fillRect((int)p.x, (int)p.y, p.width, p.height);
+        }
+
+        //Percentages
+        g2.setFont(new Font("Arial", Font.BOLD, 24));
+        g2.setColor(Color.WHITE);
+        g2.drawString("P1: " + (int)player1.damagePercentage + "%", 200, 530);
+        g2.drawString("P2: " + (int)player2.damagePercentage + "%", 500, 530);
+    }
 }
