@@ -10,28 +10,51 @@ import java.awt.Graphics2D;
 import java.awt.Font;
 
 public class Battle {
-    private Player1 player1;
-    private Player2 player2;
-    private GamePanel gp;
+    Player1 player1;
+    Player2 player2;
+    //Do NOT EVER give private GamePanel, that makes a NEW gamepanel                                                                LOOK AT THIS LINE FOR DEBUGGING CADEN
+    GamePanel gp;
     private ArrayList<Projectile> activeProjectiles;
-    private GameStateManager stateManager;
+    GameStateManager stateManager;
     
-
+    private int left_zone;
+    private int right_zone;
+    private int down_zone;
+    private int up_zone;
 
     private final double grav = 0.4;
     private final double t_v = 14.0;
     private final int ground = 450;
     private final int buffer = 100; //This is our offscreen buffer
-    private final int left_zone = -buffer;
-    private final int right_zone = gp.screenWidth +buffer;
-    private final int down_zone = gp.screenHeight+buffer;
-    private final int up_zone = -buffer;
 
-    public Battle(Player1 p1, Player2 p2) {
+    public Battle(GamePanel gp, GameStateManager stateManager, Player1 p1, Player2 p2) {
         this.player1 = p1;
         this.player2 = p2;
         this.activeProjectiles = new ArrayList<>();
+        this.gp = gp;
+        this.stateManager = stateManager;
+
+        left_zone = -buffer;
+        right_zone = gp.screenWidth +buffer;
+        down_zone = gp.screenHeight+buffer;
+        up_zone = -buffer;
     }
+    
+    /*                                                      DEBUG SECTION
+    Even moving this below this.gp = gp didn't help...
+    I'm followign the exact same format as TitelScreen????
+
+
+    Okay so the problem is: Exception in thread "main" java.lang.NullPointerException: Cannot read field "screenWidth" because "this.gp" is null
+    Thsi means this.gp is null, so whatever it's reading, is ending up not sharing with gamepanel.
+    In gamepanel, I do this: battle = new Battle(this, stateManager, p1, p2); mimicing: titleScreen = new TitleScreen(this, stateManager, keyH);
+    So why is this not working we ask?
+
+    I've imported gamepanel so that's not a problem... it would've thrown a different error anyways
+    
+    OKAY OKAY                                                    SOLUTION:
+    declare the variables at the top, then initilaize them in public battle
+    */
 
     public void update() {
         player1.update();

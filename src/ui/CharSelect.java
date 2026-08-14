@@ -33,6 +33,9 @@ public class CharSelect {
 
     public Character p1;
     public Character p2;
+
+    public boolean p1Selected = false;
+    public boolean p2Selected = false;
     
     public CharSelect(GamePanel gp, GameStateManager state, KeyHandler keyH) {
         this.gp = gp;
@@ -46,14 +49,17 @@ public class CharSelect {
             commandNum1--;
             if(commandNum1 < 0) commandNum1 = chars.length-1;
             keyH.wPressed = false;
+            p1Selected=false;
         }
         if(keyH.sPressed){
             commandNum1++;
             if(commandNum1 >= chars.length) commandNum1 = 0;
             keyH.sPressed = false;
+            p1Selected=false;
         }
         if(keyH.spacePressed){
             p1 = chars[commandNum1];
+            p1Selected = true;
         }
 
         //P2 - uses arrow keys/enter
@@ -61,15 +67,26 @@ public class CharSelect {
             commandNum2--;
             if(commandNum2 < 0) commandNum2 = chars.length-1;
             keyH.upPressed = false;
+            p2Selected = false;
         }
         if(keyH.downPressed){
             commandNum2++;
             if(commandNum2 >= chars.length) commandNum2 = 0;
             keyH.downPressed = false;
+            p2Selected = false;
         }
         if(keyH.enterPressed){
             p2 = chars[commandNum2];
+            p2Selected = true;
         }
+
+        if (p1Selected && p2Selected) {
+            state.setState(2);
+            
+            p1Selected = false;
+            p2Selected = false;
+        }
+
     }
 
     public void draw(Graphics2D g2) {
@@ -101,6 +118,9 @@ public class CharSelect {
 
             if (commandNum1 == i) {
                 g2.drawString(">", x - 40, y);
+                if(p1Selected) {
+                    g2.drawString("[Selected]", x + 150, y); // Adjust X offset as needed
+                }
             }
         }
 
@@ -120,6 +140,9 @@ public class CharSelect {
 
             if (commandNum2 == i) {
                 g2.drawString(">", x - 40, y);
+                if(p2Selected) {
+                    g2.drawString("[Selected]", x + 150, y); // Adjust X offset as needed
+                }
             }
         }
     }

@@ -41,7 +41,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         charSelect = new CharSelect(this, stateManager, keyH);
 
-        battle = new Battle(p1, p2);
+        battle = new Battle(this, stateManager, p1, p2);
     }
 
     public void startGameThread() {
