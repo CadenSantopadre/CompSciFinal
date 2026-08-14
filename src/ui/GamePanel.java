@@ -18,6 +18,7 @@ public class GamePanel extends JPanel implements Runnable {
     private Graphics2D g2;
     private KeyHandler keyH = new KeyHandler();
     private TitleScreen titleScreen;
+    private CharSelect charSelect;
 
     public int screenWidth = 1280;
     public int screenHeight = 720;
@@ -33,6 +34,8 @@ public class GamePanel extends JPanel implements Runnable {
         stateManager = new GameStateManager(this, keyH);
 
         titleScreen = new TitleScreen(this, stateManager, keyH);
+
+        charSelect = new CharSelect(this, stateManager, keyH);
     }
 
     public void startGameThread() {
@@ -80,10 +83,10 @@ public class GamePanel extends JPanel implements Runnable {
             titleScreen.update();
             break;
 
-            /*case 1:
+            case 1:
             charSelect.update();
             break;
-
+            /*
             case 2:
             battle.update();
             break;
@@ -105,10 +108,11 @@ public class GamePanel extends JPanel implements Runnable {
             titleScreen.draw(g2);
             break;
 
-            /*case 1:
+            case 1:
             charSelect.draw(g2);
             break;
-
+            
+            /*
             case 2:
             battle.draw(g2);
             break;

@@ -7,7 +7,7 @@ public class KeyHandler implements KeyListener{
     public void keyTyped(KeyEvent e) {
     }
 
-    public boolean wPressed, sPressed, aPressed, dPressed, upPressed, downPressed, rightPressed, leftPressed, enterPressed, escPressed, mPressed, shiftPressed;
+    public boolean wPressed, sPressed, aPressed, dPressed, upPressed, downPressed, rightPressed, leftPressed, enterPressed, escPressed, mPressed, shiftPressed, spacePressed;
 
     public void keyPressed(KeyEvent e) {
     
@@ -49,6 +49,9 @@ public class KeyHandler implements KeyListener{
         if(code == KeyEvent.VK_SHIFT) {
             shiftPressed = true;
         }
+        if(code == KeyEvent.VK_SPACE) {
+            spacePressed = true;
+        }
     }
 
     public void keyReleased(KeyEvent e) {
@@ -89,6 +92,9 @@ public class KeyHandler implements KeyListener{
         }
         if(code == KeyEvent.VK_SHIFT) {
             shiftPressed = false;
+        }
+        if(code == KeyEvent.VK_SPACE) {
+            spacePressed = false;
         }
     }
 }

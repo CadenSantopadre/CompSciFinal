@@ -21,22 +21,22 @@ public class TitleScreen {
 
 
     public void update() {
-        // Move cursor up
-        if (keyH.upPressed) {
+        //cursor up
+        if (keyH.wPressed) {
             commandNum--;
-            if (commandNum < 0) commandNum = 3;
-            keyH.upPressed = false;
+            if (commandNum < 0) commandNum = 2;
+            keyH.wPressed = false;
         }
 
-        // Move cursor down
-        if (keyH.downPressed) {
+        //cursor down
+        if (keyH.sPressed) {
             commandNum++;
-            if (commandNum > 3) commandNum = 0;
-            keyH.downPressed = false;
+            if (commandNum >= 3) commandNum = 0;
+            keyH.sPressed = false;
         }
 
-        // Select option
-        if (keyH.enterPressed) {
+        //select
+        if (keyH.spacePressed) {
             if (commandNum == 0) {
                 state.setState(1);
             }
@@ -46,7 +46,7 @@ public class TitleScreen {
             if (commandNum == 2) {
                 System.exit(0);
             }
-            keyH.enterPressed = false;
+            keyH.spacePressed = false;
         }
     }
 
