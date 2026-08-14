@@ -62,7 +62,7 @@ public class Player1 {
     private void shoot() {
         shootCooldown = currentChar.fireRate;
     }
-    public Rectangle getHurtbox() {
+    public Rectangle getHitbox() {
         return new Rectangle((int)x, (int)y, width, height);
     }
 }
