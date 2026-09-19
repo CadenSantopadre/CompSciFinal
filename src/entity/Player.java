@@ -1,5 +1,4 @@
 package entity;
-//Literally the only difference here is aPressed <---> leftPressed
 import util.KeyHandler;
 import java.awt.Rectangle;
 import battle.Battle;
@@ -17,6 +16,8 @@ public class Player {
     private double damagePercentage = 0.0;
     private boolean isGrounded = false;
     private boolean isRight = true;
+    private double knockX;
+    private double knockY;
 
     private Battle battle;
 
@@ -42,8 +43,14 @@ public class Player {
     public boolean getGrounded(){
         return isGrounded;
     }
+    public void setGrounded(boolean set){
+        isGrounded = set;
+    }
     public double getDamage(){
         return damagePercentage;
+    }
+    public void addDamage(double add){
+        damagePercentage += add;
     }
     public double getVelX(){
         return velX;
@@ -56,6 +63,16 @@ public class Player {
     }
     public void addVelY(double add){
         velY += add;
+    }
+    public void addVelX(double add){
+        velX += add;
+    }
+
+    public void addKnockX(double add){
+        knockX += add;
+    }
+    public void addKnockY(double add){
+        knockY += add;
     }
 
     public void setBattle(Battle battle){
@@ -105,6 +122,7 @@ public class Player {
                 shoot();
             }
         }
+        applyPhysics();
     }
 
     private void shoot() {
@@ -118,5 +136,30 @@ public class Player {
 
     public Rectangle getHitbox() {
         return new Rectangle(x, y, width, height);
+    }
+
+    public void applyPhysics(){
+        if(!isGrounded){
+            velY += currentChar.getWeight();
+            if(velY > currentChar.getWeight()){//getWeight is also terminal velcoity for now... we'll see how it works out
+                velY = currentChar.getWeight();
+            }
+        }
+
+        x += velX + knockX;
+        y += velY + knockY;
+
+        knockX *= 0.85;
+        knockY *= 0.85;                                             //KNOCKBACK DECAY FACTOR HERE
+
+        if (Math.abs(knockX) < 0.1) knockX = 0;
+        if (Math.abs(knockY) < 0.1) knockY = 0;
+
+        if(y >= battle.getGround()){
+            y = battle.getGround();
+            velY = 0;
+            knockY = 0;
+            isGrounded = true;
+        }
     }
 }

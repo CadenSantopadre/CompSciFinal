@@ -11,10 +11,10 @@ public class Projectile {
     public int width = 8;
     public int height = 8;
 
-    public int damage;
+    public double damage;
     public boolean isDead;
 
-    public Projectile(double x, double y, double velX, double velY, int damage, boolean isDead) {
+    public Projectile(double x, double y, double velX, double velY, double damage, boolean isDead) {
         this.x = x;
         this.y = y;
         this.velX = velX;
@@ -26,6 +26,10 @@ public class Projectile {
     public void update() {
         x += velX;
         y += velY;
+    }
+
+    public double getDamage(){
+        return damage;
     }
 
     public Rectangle getHitbox() {

@@ -137,8 +137,19 @@ public class GamePanel extends JPanel implements Runnable {
             break;*/
         }
     }
-
     //And here's where I'll put any extra "global" stuff
+    
+    public void startNewMatch() {
+        // 1. Create fresh players so their positions and damage percentages go back to default
+        p1 = new Player(true, 200, 300, keyH, charSelect.p1);
+        p2 = new Player(false, 1000, 300, keyH, charSelect.p2);
+        battle = new Battle(this, stateManager, p1, p2);
+        p1.setBattle(battle);
+        p2.setBattle(battle);
+        battle.update();
+    }
+
+    
     public void drawGradientBox(Graphics2D g2, int x, int y, int w, int h) {
         //left
         GradientPaint left = new GradientPaint(x, y, Color.BLACK, x, y + h, Color.BLUE);

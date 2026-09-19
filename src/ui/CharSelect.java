@@ -81,6 +81,7 @@ public class CharSelect {
         }
 
         if (p1Selected && p2Selected) {
+            gp.startNewMatch();
             state.setState(2);
             
             p1Selected = false;
@@ -107,14 +108,14 @@ public class CharSelect {
             x = 50;
             y = 100 + i * 50;
             //Give Dark Grey if they aren't unlocked
-            if(chars[i].unlocked){
+            if(chars[i].getUnlocked()){
                 g2.setColor(Color.WHITE);
             }
             else {
                 g2.setColor(Color.DARK_GRAY);
             }
 
-            g2.drawString(chars[i].name, x, y);
+            g2.drawString(chars[i].getName(), x, y);
 
             if (commandNum1 == i) {
                 g2.drawString(">", x - 40, y);
@@ -129,14 +130,14 @@ public class CharSelect {
             x = 1100;
             y = 100 + i * 50;
             //Give Dark Grey if they aren't unlocked
-            if(chars[i].unlocked){
+            if(chars[i].getUnlocked()){
                 g2.setColor(Color.WHITE);
             }
             else {
                 g2.setColor(Color.DARK_GRAY);
             }
 
-            g2.drawString(chars[i].name, x, y);
+            g2.drawString(chars[i].getName(), x, y);
 
             if (commandNum2 == i) {
                 g2.drawString(">", x - 40, y);
