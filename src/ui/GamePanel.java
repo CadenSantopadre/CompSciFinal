@@ -21,8 +21,8 @@ public class GamePanel extends JPanel implements Runnable {
     private TitleScreen titleScreen;
     private CharSelect charSelect;
     private Battle battle;
-    private Player1 p1;
-    private Player2 p2;
+    private Player p1;
+    private Player p2;
 
     public int screenWidth = 1280;
     public int screenHeight = 720;
@@ -41,7 +41,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         charSelect = new CharSelect(this, stateManager, keyH);
 
-        battle = new Battle(this, stateManager, p1, p2);
+        //DONT put battle here, look below                                                          LOOK BELOW CADEN
     }
 
     public void startGameThread() {
@@ -94,7 +94,14 @@ public class GamePanel extends JPanel implements Runnable {
             break;
 
             case 2:
-            battle.update();
+                if (battle == null) {
+                    p1 = new Player(true, 200, 300, keyH, charSelect.p1);
+                    p2 = new Player(false, 1000, 300, keyH, charSelect.p2);
+                    battle = new Battle(this, stateManager, p1, p2);
+                    p1.setBattle(battle);
+                    p2.setBattle(battle);
+                }
+                battle.update();
             break;
             /*
             case 3:
@@ -120,7 +127,9 @@ public class GamePanel extends JPanel implements Runnable {
             
             
             case 2:
-            battle.draw(g2);
+            if (battle != null) {
+                battle.draw(g2);
+            }
             break;
             /*
             case 3:

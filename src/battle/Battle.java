@@ -10,8 +10,8 @@ import java.awt.Graphics2D;
 import java.awt.Font;
 
 public class Battle {
-    Player1 player1;
-    Player2 player2;
+    Player player1;
+    Player player2;
     //Do NOT EVER give private GamePanel, that makes a NEW gamepanel                                                                LOOK AT THIS LINE FOR DEBUGGING CADEN
     GamePanel gp;
     private ArrayList<Projectile> activeProjectiles;
@@ -27,7 +27,7 @@ public class Battle {
     private final int ground = 450;
     private final int buffer = 100; //This is our offscreen buffer
 
-    public Battle(GamePanel gp, GameStateManager stateManager, Player1 p1, Player2 p2) {
+    public Battle(GamePanel gp, GameStateManager stateManager, Player p1, Player p2) {
         this.player1 = p1;
         this.player2 = p2;
         this.activeProjectiles = new ArrayList<>();
@@ -52,7 +52,7 @@ public class Battle {
 
     I've imported gamepanel so that's not a problem... it would've thrown a different error anyways
     
-    OKAY OKAY                                                    SOLUTION:
+    -                                                            SOLUTION:
     declare the variables at the top, then initilaize them in public battle
     */
 
@@ -60,37 +60,18 @@ public class Battle {
         player1.update();
         player2.update();
 
-        applyPhysics1(player1);
-        applyPhysics2(player2);
+        applyPhysics(player1);
+        applyPhysics(player2);
 
         updateProjectiles();
         checkBlastZone(player1, player2);
     }
 
-
-    //I already regret makign different plaer classes, I should've foudn a workaround
-    private void applyPhysics1(Player1 p) {
-        if(p.isGrounded==false){
-            p.velY += grav;
-            if(p.velY > t_v) {
-                p.velY = t_v;
-            }
-        }
-            
-        p.x += p.velX;
-        p.y += p.velY;
-
-        if(p.y >= ground) {
-            p.y = ground;
-            p.velY = 0;
-            p.isGrounded = true;
-        }
-    }
-    private void applyPhysics2(Player2 p) {
-        if(p.isGrounded==false){
-            p.velY += grav;
-            if(p.velY > t_v) {
-                p.velY = t_v;
+    private void applyPhysics(Player p) {
+        if(p.getGrounded()==false){
+            p.addVelY(grav);
+            if(p.getVelY() > t_v) {
+                p.setVelY(t_v);
             }
         }
             
@@ -104,10 +85,8 @@ public class Battle {
         }
     }
 
-
-
-    public void spawnProjectile(double x, double y, double velX, double velY, int damage, boolean isDead) {
-        activeProjectiles.add(new Projectile(x, y, velX, velY, damage, isDead));
+    public void spawnProjectile(double x, double y, double velX, double velY, int damage) {
+        activeProjectiles.add(new Projectile(x, y, velX, 0, damage, false));
     }
 
     private void updateProjectiles() {
@@ -152,11 +131,11 @@ public class Battle {
         }
     }
 
-    public void checkBlastZone(Player1 p1, Player2 p2) {
-        if(p1.x < left_zone || p1.x > right_zone || p1.y < up_zone || p1.y > down_zone){
+    public void checkBlastZone(Player p1, Player p2) {
+        if(p1.getX() < left_zone || p1.getX() > right_zone || p1.getY() < up_zone || p1.getY() > down_zone){
             stateManager.setState(1);
         }
-        if(p2.x < left_zone || p2.x > right_zone || p2.y < up_zone || p2.y > down_zone){
+        if(p2.getX() < left_zone || p2.getX() > right_zone || p2.getY() < up_zone || p2.getY() > down_zone){
             stateManager.setState(1);
         }
     }
@@ -164,14 +143,14 @@ public class Battle {
     //Next we add the draw methods
     public void draw(Graphics2D g2){
         //Make a sky/black bottom
-        gp.drawGradientBox(g2, 0, 0, gp.screenWidth, gp.screenHeight, Color.CYAN, Color.BLACK);
+        gp.drawGradientBox(g2, 0, 0, gp.screenWidth, gp.screenHeight, Color.BLUE, Color.BLACK);
 
         //Then make player 1
         g2.setColor(Color.RED);
-        g2.fillRect((int)player1.x, (int)player1.y, 32, 48);
+        g2.fillRect(player1.getX(), player1.getY(), 32, 48);
         //p2
         g2.setColor(Color.BLUE);
-        g2.fillRect((int)player2.x, (int)player2.y, 32, 48);
+        g2.fillRect(player2.getX(), player2.getY(), 32, 48);
 
         g2.setColor(Color.YELLOW);
         //No reverse for loop here for some reason??????
@@ -184,6 +163,6 @@ public class Battle {
         g2.setFont(new Font("Arial", Font.BOLD, 24));
         g2.setColor(Color.WHITE);
         g2.drawString("P1: " + (int)player1.damagePercentage + "%", 200, 530);
-        g2.drawString("P2: " + (int)player2.damagePercentage + "%", 500, 530);
+        g2.drawString("P2: " + (int)player2.damagePercentage + "%", 1000, 530);
     }
 }

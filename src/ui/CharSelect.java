@@ -26,9 +26,9 @@ public class CharSelect {
     public double weight;
     */
     public static final Character[] chars = {
-      //new Character(        "ImgPath"    ,      "Name"   ,       Speed,    fireRate,  Jump,      Weight,      unlocked),
-        new Character("NO_IMG_YET", "Shooter", 3.0, 5, 2.0, 2.0, true),
-        new Character("NO_IMG_YET","Clubber", 2.0, 10, 2.0, 2.0, false)
+        //imgPath is there, but we don't use it yet, right now 
+        new Character("src\\res\\CCS250RD.jpg", "Shooter", 3.0, 5, 10.0, 2.0, true),
+        new Character("src\\res\\CCS400BL.jpg","Shooter2", 2.0, 5, 10.0, 2.0, false)
     };
 
     public Character p1;

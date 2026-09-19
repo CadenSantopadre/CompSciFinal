@@ -1,13 +1,13 @@
 package entity;
 
 public class Character {
-    public String imgPath;
-    public String name;
-    public double speed;
-    public int fireRate;
-    public double jump;
-    public double weight;
-    public boolean unlocked;
+    private String imgPath;
+    private String name;
+    private double speed;
+    private int fireRate;
+    private double jump;
+    private double weight;
+    private boolean unlocked;
 
     public Character(String imgPath, String name, double speed, int fireRate, double jump, double weight, boolean unlocked){
         this.imgPath = imgPath;
@@ -17,5 +17,27 @@ public class Character {
         this.jump = jump;
         this.weight = weight;
         this.unlocked = unlocked;   
+    }
+
+    public String getImgPath(){
+        return imgPath;
+    }
+    public String getName(){
+        return name;
+    }
+    public double getSpeed(){
+        return speed;
+    }
+    public int getFireRate(){
+        return fireRate;
+    }
+    public double getJump(){
+        return jump;
+    }
+    public double getWeight(){
+        return weight;
+    }
+    public boolean getUnlocked(){
+        return unlocked;
     }
 }
