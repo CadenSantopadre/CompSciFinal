@@ -175,7 +175,7 @@ private static final int[][] HYRULE_TEMPLE_LARGE = {
         return new Tilemap[] {new Tilemap(FINAL_DESTINATION_LARGE), new Tilemap(BATTLEFIELD_LARGE), new Tilemap(SMASHVILLE_LARGE), new Tilemap(HYRULE_TEMPLE_LARGE)};
     }
 
-    public int getColumnCount() {
+    public int getColCount() {
         return mapData[0].length;
     }
 

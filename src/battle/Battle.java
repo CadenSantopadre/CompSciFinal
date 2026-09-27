@@ -16,6 +16,7 @@ public class Battle {
     //Do NOT EVER give private GamePanel, that makes a NEW gamepanel                                                                LOOK AT THIS LINE FOR DEBUGGING CADEN
     GamePanel gp;
     private ArrayList<Projectile> activeProjectiles;
+    private ArrayList<Sword> activeSwords;
     GameStateManager stateManager;
     
     private int left_zone;
@@ -23,8 +24,6 @@ public class Battle {
     private int down_zone;
     private int up_zone;
 
-    private final double grav = 0.4;
-    private final double t_v = 14.0;
     private final int buffer = 100; //This is our offscreen buffer
     private final Tilemap tilemap;
 
@@ -35,6 +34,7 @@ public class Battle {
         this.player2 = p2;
         this.tilemap = tilemap;
         this.activeProjectiles = new ArrayList<>();
+        this.activeSwords = new ArrayList<>();
 
         // Now gp is guaranteed not to be null when reading screen settings
         this.left_zone = -buffer;
@@ -65,7 +65,7 @@ public class Battle {
 
     public boolean collidesWithTilemap(java.awt.Rectangle hitbox) {
         for (int row = 0; row < tilemap.getRowCount(); row++) {
-            for (int col = 0; col < tilemap.getColumnCount(); col++) {
+            for (int col = 0; col < tilemap.getColCount(); col++) {
                 if (tilemap.isTileSolid(col, row)
                         && hitbox.intersects(tilemap.getTileBounds(col, row, gp.screenWidth, gp.screenHeight))) {
                     return true;
@@ -80,12 +80,53 @@ public class Battle {
         player2.update();
 
         updateProjectiles();
+        updateSwords();
         checkBlastZone(player1, player2);
     }
 
     public void spawnProjectile(double x, double y, double velX, double velY, double damage) {
         activeProjectiles.add(new Projectile(x, y, velX, 0, damage, false));
     }
+
+    public void spawnSwordArc(Player attacker, String direction, double damage, int durationFrames) {
+        activeSwords.add(new Sword(attacker, direction, damage, durationFrames));
+    }
+
+    private void updateSwords() {
+        // Reverse for-loop is mandatory for safe concurrent removal from ArrayLists
+        for (int i = activeSwords.size() - 1; i >= 0; i--) {
+            Sword s = activeSwords.get(i);
+            
+            s.updatePosition(); // Keeps sword locked seamlessly onto moving players
+            s.update();
+
+            // 1. Check if Player 2 swung a sword hitting Player 1
+            if (s.getOwner() == player2 && s.getHitbox().intersects(player1.getHitbox())) {
+                executeHit(player1, player2, s);
+                s.isDead = true;
+            }
+            // 2. Check if Player 1 swung a sword hitting Player 2
+            else if (s.getOwner() == player1 && s.getHitbox().intersects(player2.getHitbox())) {
+                executeHit(player2, player1, s);
+                s.isDead = true;
+            }
+
+            if (s.isDead) {
+                activeSwords.remove(i);
+            }
+        }
+    }
+
+    // Clean helper method to completely eliminate code duplication
+    private void executeHit(Player target, Player attacker, Sword weapon) {
+        target.addDamage(weapon.getDamage() * attacker.getChar().getFireRate() * 0.05 * (Math.random() + 0.01));
+        
+        double knockbackMultiplier = "left".equals(weapon.getDirection()) ? -1.5 : 1.5;
+        target.addKnockX(target.getDamage() * knockbackMultiplier);
+        target.addKnockY(target.getDamage() * -1.0); 
+        target.setGrounded(false);
+    }
+
 
     private void updateProjectiles() {
         for (int i = activeProjectiles.size() - 1; i >= 0; i--) {
@@ -94,7 +135,7 @@ public class Battle {
 
             // --- PLAYER 1 COLLISION ---
             if (p.getHitbox().intersects(player1.getHitbox())) {
-                player1.addDamage(p.getDamage());
+                player1.addDamage(p.getDamage() * player2.getChar().getFireRate() * 0.05 * (Math.random()+0.01));
                 p.isDead = true;
 
                 boolean projectileGoingRight = (p.velX > 0);
@@ -109,7 +150,7 @@ public class Battle {
 
             // --- PLAYER 2 COLLISION ---
             if (p.getHitbox().intersects(player2.getHitbox())) {
-                player2.addDamage(p.getDamage());
+                player2.addDamage(p.getDamage() * player1.getChar().getFireRate() * 0.05 * (Math.random()+0.01));
                 p.isDead = true;
 
                 boolean projectileGoingRight = (p.velX > 0);
@@ -158,6 +199,18 @@ public class Battle {
             Projectile p = activeProjectiles.get(i);
             g2.fillRect((int)p.x, (int)p.y, p.width, p.height);
         }
+        for (int i = 0; i < activeSwords.size(); i++) {
+            Sword s = activeSwords.get(i);
+            
+            // Draw semi-transparent combat slash area
+            g2.setColor(new Color(255, 230, 100, 110)); 
+            g2.fillRect((int)s.x, (int)s.y, s.width, s.height);
+            
+            // Hard weapon slash line edge
+            g2.setColor(Color.ORANGE);
+            g2.drawRect((int)s.x, (int)s.y, s.width, s.height);
+        }
+
 
         //Percentages
         g2.setFont(new Font("Arial", Font.BOLD, 24));

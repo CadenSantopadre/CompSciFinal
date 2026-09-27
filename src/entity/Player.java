@@ -79,6 +79,10 @@ public class Player {
         this.battle = battle;
     }
 
+    public Character getChar(){
+        return currentChar;
+    }
+
     public void update() {
         if(isP1){
             if (keyH.aPressed) {
@@ -98,7 +102,7 @@ public class Player {
 
             if (shootCooldown > 0) shootCooldown--;
             if (keyH.sPressed && shootCooldown == 0) {
-                shoot();
+                attack();
             }    
         }
         else{
@@ -119,19 +123,22 @@ public class Player {
 
             if (shootCooldown > 0) shootCooldown--;
             if (keyH.downPressed && shootCooldown == 0) {
-                shoot();
+                attack();
             }
         }
         applyPhysics();
-        System.out.println(knockY);
+
     }
 
-    private void shoot() {
+    private void attack() {
         int direction = isRight ? 1 : -1;
-        int projectileX = x + (width / 2) + (direction * 50); //This way it won't crash into player
-        int projectileY = y + (height / 2);
-
-        battle.spawnProjectile(projectileX, projectileY, direction * currentChar.getSpeed() * 1.6, 0, 10);
+        if (currentChar.getMelee()) {
+            battle.spawnSwordArc(this, isRight ? "right" : "left", 10, 8);
+        } else {
+            int projectileX = x + (width / 2) + (direction * 50);
+            int projectileY = y + (height / 2);
+            battle.spawnProjectile(projectileX, projectileY, direction * currentChar.getSpeed() * 1.6, 0, 10);
+        }
         shootCooldown = currentChar.getFireRate();
     }
 
@@ -142,8 +149,8 @@ public class Player {
     public void applyPhysics(){
         if(!isGrounded){
             velY += currentChar.getWeight();
-            if(velY > currentChar.getWeight()){//getWeight is also terminal velcoity for now... we'll see how it works out
-                velY = currentChar.getWeight();
+            if(velY > currentChar.getWeight()+100){//getWeight is also terminal velcoity for now... we'll see how it works out
+                velY = currentChar.getWeight()+100;
             }
         }
 

@@ -28,8 +28,9 @@ public class CharSelect {
     */
     public static final Character[] chars = {
         //imgPath is there, but we don't use it yet, right now 
-        new Character("src\\res\\CCS250RD.jpg", "Shooter", 3.0, 5, 10.0, 2.0, true),
-        new Character("src\\res\\CCS400BL.jpg","Shooter2", 2.0, 5, 10.0, 2.0, false)
+        new Character("src\\res\\CCS250RD.jpg", "Shooter", 10.0, 50, 10.0, 1.0, true, false),
+        new Character("src\\res\\CCS400BL.jpg","Heavy", 5.0, 100, 10.0, 1.0, false, false),
+        new Character("no img yet", "Sword", 10.0, 10, 10.0, 1.0, true, true),
     };
 
     public Character p1;
@@ -50,15 +51,15 @@ public class CharSelect {
 
     public void update() {
         if (choosingStage) {
-            if (keyH.aPressed || keyH.leftPressed) {
+            if (keyH.wPressed || keyH.upPressed) {
                 stageChoice = (stageChoice + stages.length - 1) % stages.length;
-                keyH.aPressed = false;
-                keyH.leftPressed = false;
+                keyH.wPressed = false;
+                keyH.upPressed = false;
             }
-            if (keyH.dPressed || keyH.rightPressed) {
+            if (keyH.sPressed || keyH.downPressed) {
                 stageChoice = (stageChoice + 1) % stages.length;
-                keyH.dPressed = false;
-                keyH.rightPressed = false;
+                keyH.sPressed = false;
+                keyH.downPressed = false;
             }
             if (keyH.spacePressed || keyH.enterPressed) {
                 selectedStage = stages[stageChoice];
@@ -124,26 +125,56 @@ public class CharSelect {
 
         gp.drawGradientBox(g2, 0,0,gp.screenWidth,gp.screenHeight);
 
+        // Inside your draw loop:
         if (choosingStage) {
-            g2.setColor(Color.WHITE);
-            g2.setFont(new Font("Arial", Font.BOLD, 48));
-            String title = "Choose a Battle Map";
-            g2.drawString(title, gp.centeredText(title), 100);
-            g2.setFont(new Font("Arial", Font.PLAIN, 28));
-            for (int i = 0; i < stages.length; i++) {
-                int previewX = 190 + i * 470;
-                int previewY = 280;
-                if (i == stageChoice) {
-                    g2.setColor(Color.YELLOW);
-                    g2.drawRect(previewX - 12, previewY - 42, 16 * 20 + 24, 7 * 20 + 76);
-                }
-                stages[i].drawPreview(g2, previewX, previewY, 20);
-                g2.setColor(Color.WHITE);
-                g2.drawString(i == 0 ? "Classic" : "Wide", previewX, previewY + 7 * 20 + 32);
+            int padding = 12;
+            int startY = 50;
+
+            int height = gp.screenHeight - 2*startY;
+            int segHeight = height / stages.length; 
+            int maxCols = 0;
+            int maxRows = 0;
+            for (Tilemap stage : stages) {
+                maxCols = Math.max(maxCols, stage.getColCount());
+                maxRows = Math.max(maxRows, stage.getRowCount());
             }
-            g2.drawString("A/D or Left/Right to choose, Space/Enter to start", 300, 580);
+            int availableWidth = gp.screenWidth - 2 * padding;
+            int availableHeight = segHeight - 2 * padding;
+            int previewScale = Math.max(1, Math.min(12,
+                    Math.min(availableWidth / maxCols, availableHeight / maxRows)));
+
+             for (int i = 0; i < stages.length; i++) {
+                int mapCols = stages[i].getColCount();
+                int mapRows = stages[i].getRowCount();
+                
+                int previewWidth = mapCols * previewScale;
+                int previewHeight = mapRows * previewScale;
+
+                // Horizontally center
+                int previewX = (gp.screenWidth - previewWidth) / 2;
+                
+                // Vertically center EACH preview inside its designated "slice" of screen height
+                // This distributes them perfectly up and down the screen!
+                int sliceCenterY = startY + (i * segHeight) + (segHeight / 2);
+                int previewY = sliceCenterY - (previewHeight / 2);
+
+                // 5. Selection Highlight Box
+                if (i == stageChoice) {
+
+                    g2.setColor(new Color(255, 255, 0, 30));
+                    g2.fillRect(previewX - padding, previewY - padding, previewWidth + (padding * 2), previewHeight + (padding * 2));
+
+                    g2.setColor(Color.YELLOW);
+                    g2.drawRect(previewX - padding, previewY - padding, previewWidth + (padding * 2), previewHeight + (padding * 2));
+                }
+
+                // 6. Draw
+                stages[i].drawPreview(g2, previewX, previewY, previewScale);
+            }
             return;
         }
+
+
 
         String title = "Character Select";
         int x = gp.centeredText(title);
@@ -196,9 +227,4 @@ public class CharSelect {
             }
         }
     }
-
-    /*
-    Eventually we'll make a method that shows the name and character side by side...
-    Then use that in the for loops instead of g2.drawString
-    */
 }

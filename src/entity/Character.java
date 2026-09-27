@@ -8,15 +8,17 @@ public class Character {
     private double jump;
     private double weight;
     private boolean unlocked;
+    private boolean melee;
 
-    public Character(String imgPath, String name, double speed, int fireRate, double jump, double weight, boolean unlocked){
+    public Character(String imgPath, String name, double speed, int fireRate, double jump, double weight, boolean unlocked, boolean melee){
         this.imgPath = imgPath;
         this.name = name;
         this.speed = speed;
         this.fireRate = fireRate;
         this.jump = jump;
         this.weight = weight;
-        this.unlocked = unlocked;   
+        this.unlocked = unlocked;
+        this.melee = melee;   
     }
 
     public String getImgPath(){
@@ -39,5 +41,8 @@ public class Character {
     }
     public boolean getUnlocked(){
         return unlocked;
+    }
+    public boolean getMelee(){
+        return melee;
     }
 }
