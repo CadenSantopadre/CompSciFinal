@@ -6,6 +6,7 @@ import java.awt.Font;
 import util.KeyHandler;
 import util.GameStateManager;
 import entity.Character;
+import map.Tilemap;
 
 
 public class CharSelect {
@@ -36,6 +37,10 @@ public class CharSelect {
 
     public boolean p1Selected = false;
     public boolean p2Selected = false;
+    private final Tilemap[] stages = Tilemap.getStages();
+    private int stageChoice = 0;
+    private boolean choosingStage = false;
+    public Tilemap selectedStage = stages[0];
     
     public CharSelect(GamePanel gp, GameStateManager state, KeyHandler keyH) {
         this.gp = gp;
@@ -44,6 +49,28 @@ public class CharSelect {
     }
 
     public void update() {
+        if (choosingStage) {
+            if (keyH.aPressed || keyH.leftPressed) {
+                stageChoice = (stageChoice + stages.length - 1) % stages.length;
+                keyH.aPressed = false;
+                keyH.leftPressed = false;
+            }
+            if (keyH.dPressed || keyH.rightPressed) {
+                stageChoice = (stageChoice + 1) % stages.length;
+                keyH.dPressed = false;
+                keyH.rightPressed = false;
+            }
+            if (keyH.spacePressed || keyH.enterPressed) {
+                selectedStage = stages[stageChoice];
+                keyH.spacePressed = false;
+                keyH.enterPressed = false;
+                choosingStage = false;
+                gp.startNewMatch(selectedStage);
+                state.setState(2);
+            }
+            return;
+        }
+
         //P1 - uses WASD/space
         if(keyH.wPressed){
             commandNum1--;
@@ -60,6 +87,7 @@ public class CharSelect {
         if(keyH.spacePressed){
             p1 = chars[commandNum1];
             p1Selected = true;
+            keyH.spacePressed = false;
         }
 
         //P2 - uses arrow keys/enter
@@ -78,12 +106,12 @@ public class CharSelect {
         if(keyH.enterPressed){
             p2 = chars[commandNum2];
             p2Selected = true;
+            keyH.enterPressed = false;
         }
 
         if (p1Selected && p2Selected) {
-            gp.startNewMatch();
-            state.setState(2);
-            
+            choosingStage = true;
+            stageChoice = 0;
             p1Selected = false;
             p2Selected = false;
         }
@@ -95,6 +123,27 @@ public class CharSelect {
         g2.setFont(new Font("Arial", Font.BOLD, 48));
 
         gp.drawGradientBox(g2, 0,0,gp.screenWidth,gp.screenHeight);
+
+        if (choosingStage) {
+            g2.setColor(Color.WHITE);
+            g2.setFont(new Font("Arial", Font.BOLD, 48));
+            String title = "Choose a Battle Map";
+            g2.drawString(title, gp.centeredText(title), 100);
+            g2.setFont(new Font("Arial", Font.PLAIN, 28));
+            for (int i = 0; i < stages.length; i++) {
+                int previewX = 190 + i * 470;
+                int previewY = 280;
+                if (i == stageChoice) {
+                    g2.setColor(Color.YELLOW);
+                    g2.drawRect(previewX - 12, previewY - 42, 16 * 20 + 24, 7 * 20 + 76);
+                }
+                stages[i].drawPreview(g2, previewX, previewY, 20);
+                g2.setColor(Color.WHITE);
+                g2.drawString(i == 0 ? "Classic" : "Wide", previewX, previewY + 7 * 20 + 32);
+            }
+            g2.drawString("A/D or Left/Right to choose, Space/Enter to start", 300, 580);
+            return;
+        }
 
         String title = "Character Select";
         int x = gp.centeredText(title);

@@ -123,6 +123,7 @@ public class Player {
             }
         }
         applyPhysics();
+        System.out.println(knockY);
     }
 
     private void shoot() {
@@ -146,20 +147,42 @@ public class Player {
             }
         }
 
-        x += velX + knockX;
-        y += velY + knockY;
+        int horizontalMovement = (int) Math.round(velX + knockX);
+        int horizontalDirection = Integer.signum(horizontalMovement);
+        for (int i = 0; i < Math.abs(horizontalMovement); i++) {
+            x += horizontalDirection;
+            if (battle.collidesWithTilemap(getHitbox())) {
+                x -= horizontalDirection;
+                velX = 0;
+                knockX = 0;
+                break;
+            }
+        }
+
+        boolean wasGrounded = isGrounded;
+        int verticalMovement = (int) Math.round(velY + knockY);
+        int verticalDirection = Integer.signum(verticalMovement);
+        isGrounded = false;
+        for (int i = 0; i < Math.abs(verticalMovement); i++) {
+            y += verticalDirection;
+            if (battle.collidesWithTilemap(getHitbox())) {
+                y -= verticalDirection;
+                isGrounded = verticalDirection > 0;
+                velY = 0;
+                knockY = 0;
+                break;
+            }
+        }
+        if (wasGrounded && verticalMovement == 0) {
+            Rectangle supportCheck = getHitbox();
+            supportCheck.translate(0, 1);
+            isGrounded = battle.collidesWithTilemap(supportCheck);
+        }
 
         knockX *= 0.85;
         knockY *= 0.85;                                             //KNOCKBACK DECAY FACTOR HERE
 
         if (Math.abs(knockX) < 0.1) knockX = 0;
         if (Math.abs(knockY) < 0.1) knockY = 0;
-
-        if(y >= battle.getGround()){
-            y = battle.getGround();
-            velY = 0;
-            knockY = 0;
-            isGrounded = true;
-        }
-    }
+    }    
 }

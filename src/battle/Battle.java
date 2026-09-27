@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import entity.*;
 import ui.GamePanel;
 import util.GameStateManager;
+import map.Tilemap;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -24,14 +25,15 @@ public class Battle {
 
     private final double grav = 0.4;
     private final double t_v = 14.0;
-    private final int ground = 450;
     private final int buffer = 100; //This is our offscreen buffer
+    private final Tilemap tilemap;
 
-    public Battle(GamePanel gp, GameStateManager stateManager, Player p1, Player p2) {
+    public Battle(GamePanel gp, GameStateManager stateManager, Player p1, Player p2, Tilemap tilemap) {
         this.gp = gp; // Always map the core reference first!
         this.stateManager = stateManager;
         this.player1 = p1;
         this.player2 = p2;
+        this.tilemap = tilemap;
         this.activeProjectiles = new ArrayList<>();
 
         // Now gp is guaranteed not to be null when reading screen settings
@@ -45,25 +47,32 @@ public class Battle {
         this.player2.setBattle(this);
     }
 
-    
-    /*                                                      DEBUG SECTION
-    Even moving this below this.gp = gp didn't help...
-    I'm followign the exact same format as TitelScreen????
-
-
-    Okay so the problem is: Exception in thread "main" java.lang.NullPointerException: Cannot read field "screenWidth" because "this.gp" is null
-    Thsi means this.gp is null, so whatever it's reading, is ending up not sharing with gamepanel.
-    In gamepanel, I do this: battle = new Battle(this, stateManager, p1, p2); mimicing: titleScreen = new TitleScreen(this, stateManager, keyH);
-    So why is this not working we ask?
-
-    I've imported gamepanel so that's not a problem... it would've thrown a different error anyways
-    
-    -                                                            SOLUTION:
-    declare the variables at the top, then initilaize them in public battle
-    */
-
     public int getGround(){
-        return ground;
+        return gp.screenHeight;
+    }
+
+    public Tilemap getTilemap() {
+        return tilemap;
+    }
+
+    public int getScreenWidth() {
+        return gp.screenWidth;
+    }
+
+    public int getScreenHeight() {
+        return gp.screenHeight;
+    }
+
+    public boolean collidesWithTilemap(java.awt.Rectangle hitbox) {
+        for (int row = 0; row < tilemap.getRowCount(); row++) {
+            for (int col = 0; col < tilemap.getColumnCount(); col++) {
+                if (tilemap.isTileSolid(col, row)
+                        && hitbox.intersects(tilemap.getTileBounds(col, row, gp.screenWidth, gp.screenHeight))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public void update() {
@@ -94,7 +103,7 @@ public class Battle {
                 } else {
                     player1.addKnockX(player1.getDamage()*-1.5);
                 }
-                    player1.addKnockY(player1.getDamage()); 
+                    player1.addKnockY(player1.getDamage()*-1); 
                 player1.setGrounded(false);
             }
 
@@ -109,7 +118,7 @@ public class Battle {
                 } else {
                     player2.addKnockX(player2.getDamage()*-1.5);
                 }
-                    player2.addKnockY(player2.getDamage()); 
+                    player2.addKnockY(player2.getDamage()*-1); 
                 player2.setGrounded(false);
             }
 
@@ -134,6 +143,7 @@ public class Battle {
     public void draw(Graphics2D g2){
         //Make a sky/black bottom
         gp.drawGradientBox(g2, 0, 0, gp.screenWidth, gp.screenHeight, Color.BLUE, Color.BLACK);
+        tilemap.draw(g2, gp.screenWidth, gp.screenHeight);
 
         //Then make player 1
         g2.setColor(Color.RED);

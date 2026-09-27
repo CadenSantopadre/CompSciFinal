@@ -95,9 +95,9 @@ public class GamePanel extends JPanel implements Runnable {
 
             case 2:
                 if (battle == null) {
-                    p1 = new Player(true, 200, 300, keyH, charSelect.p1);
-                    p2 = new Player(false, 1000, 300, keyH, charSelect.p2);
-                    battle = new Battle(this, stateManager, p1, p2);
+                    p1 = new Player(true, 480, 300, keyH, charSelect.p1);
+                    p2 = new Player(false, 768, 300, keyH, charSelect.p2);
+                    battle = new Battle(this, stateManager, p1, p2, charSelect.selectedStage);
                     p1.setBattle(battle);
                     p2.setBattle(battle);
                 }
@@ -139,11 +139,11 @@ public class GamePanel extends JPanel implements Runnable {
     }
     //And here's where I'll put any extra "global" stuff
     
-    public void startNewMatch() {
+    public void startNewMatch(map.Tilemap selectedStage) {
         // 1. Create fresh players so their positions and damage percentages go back to default
-        p1 = new Player(true, 200, 300, keyH, charSelect.p1);
-        p2 = new Player(false, 1000, 300, keyH, charSelect.p2);
-        battle = new Battle(this, stateManager, p1, p2);
+        p1 = new Player(true, 480, 300, keyH, charSelect.p1);
+        p2 = new Player(false, 768, 300, keyH, charSelect.p2);
+        battle = new Battle(this, stateManager, p1, p2, selectedStage);
         p1.setBattle(battle);
         p2.setBattle(battle);
         battle.update();
