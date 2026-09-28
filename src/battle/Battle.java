@@ -9,11 +9,14 @@ import map.Tilemap;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Font;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.File;
 
 public class Battle {
     Player player1;
     Player player2;
-    //Do NOT EVER give private GamePanel, that makes a NEW gamepanel                                                                LOOK AT THIS LINE FOR DEBUGGING CADEN
     GamePanel gp;
     private ArrayList<Projectile> activeProjectiles;
     private ArrayList<Sword> activeSwords;
@@ -23,6 +26,8 @@ public class Battle {
     private int right_zone;
     private int down_zone;
     private int up_zone;
+
+    private BufferedImage player1Sprite;
 
     private final int buffer = 100; //This is our offscreen buffer
     private final Tilemap tilemap;
@@ -45,6 +50,13 @@ public class Battle {
         // Link the players back to this battle manager instance so they can use shoot()
         this.player1.setBattle(this);
         this.player2.setBattle(this);
+
+        try {
+            player1Sprite = ImageIO.read(getClass().getResource("/res/Sprite-0001.png"));
+        } catch (IOException | NullPointerException e) {
+            System.out.println("Error: Could not load the image file from /res/Sprite-0001.png.");
+            e.printStackTrace();
+        }
     }
 
     public int getGround(){
@@ -187,14 +199,19 @@ public class Battle {
         tilemap.draw(g2, gp.screenWidth, gp.screenHeight);
 
         //Then make player 1
-        g2.setColor(Color.RED);
-        g2.fillRect(player1.getX(), player1.getY(), 32, 48);
+        if (player1Sprite != null) {
+            // Note: Fixed a minor bug here where you passed player2.getY() instead of player1.getY()
+            g2.drawImage(player1Sprite, player1.getX(), player1.getY(), null);
+        } else {
+            // Fallback square in case image fails to load
+            g2.setColor(Color.RED);
+            g2.fillRect(player1.getX(), player1.getY(), 32, 48);
+        }
         //p2
         g2.setColor(Color.BLUE);
         g2.fillRect(player2.getX(), player2.getY(), 32, 48);
 
         g2.setColor(Color.YELLOW);
-        //No reverse for loop here for some reason??????
         for (int i = 0; i < activeProjectiles.size(); i++) {
             Projectile p = activeProjectiles.get(i);
             g2.fillRect((int)p.x, (int)p.y, p.width, p.height);
